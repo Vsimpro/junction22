@@ -1,0 +1,1 @@
+CREATE TABLE Nodes(location_a, location_b, distance)
