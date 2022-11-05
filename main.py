@@ -47,6 +47,33 @@ class Database:
 # Store locations
 class Nodes:
     array = []
+    delivery_list = []
+
+class Count:
+    count = 0
+
+
+def Group(location_1, location_2, distance):
+    
+    duplicate = False
+    if distance < settings.distance:
+        newlist = []
+        newlist.append(location_1)
+        newlist.append(location_2)
+
+        for item in Nodes.delivery_list:
+            if item[0] == newlist[1] and item[1] == newlist[0]:
+                print("Duplicate!")
+                duplicate = True
+            
+
+        if not duplicate:
+            Nodes.delivery_list.append(newlist)
+
+
+        print(f"\n{location_1[:6]}..{location_1[-2:]}, {location_2[:6]}..{location_2[-2:]}\t", end=" ")
+        print(distance, "km")
+        Count.count += 1
 
 
 def create_node(this_node):
@@ -108,4 +135,6 @@ if __name__ == "__main__":
                 if  dest == location:
                     dest = node[0].replace("_", " ")
 
-                print("\t", dest[:6], dest[-2:], "\t", dist)   
+                Group(location, dest, float(dist))
+    print(Count.count)
+    print(Nodes.delivery_list)   
