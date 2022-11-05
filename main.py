@@ -29,14 +29,20 @@ class Database:
             print(e)
 
     def add_distances(this, location_a, location_b, distance):
-        location_a = location_a.replace(" ", "")
-        location_b = location_b.replace(" ", "")
+        location_a = location_a.replace(" ", "_")
+        location_b = location_b.replace(" ", "_")
 
         try:
             this.cur.execute(f"INSERT INTO Distances VALUES('{location_a}','{location_b}', '{distance}')")
         except Exception as e:
             print(e)
 
+    def get_distances(this, location):
+        try:
+            res = this.cur.execute(f"SELECT location_a, location_b, distance FROM Distances WHERE location_a = '{location}' or location_b = '{location}'")
+            return res.fetchall()
+        except Exception as e:
+            print(e)
 
 # Store locations
 class Nodes:
@@ -64,10 +70,12 @@ def create_node(this_node):
         if location_1 == location_2:
             continue
 
-        print(f"\n  {location_1[:6]}.., {location_2[:6]}.. :\t", end=" ")
+        if settings.verbose: print(f"\n  {location_1[:6]}..{location_1[-2:]}, {location_2[:6]}..{location_2[-2:]} :\t", end=" ")
         distance = round(calculate_distance(location_1, location_2), 3)
-        print(distance, "km")
-        
+        Database.add_distances(Database, location_1, location_2, distance)   
+        if settings.verbose: print(distance)
+
+          
 
     return 0
 
@@ -76,9 +84,28 @@ if __name__ == "__main__":
     locations = [
         "Mannerheimintie 4",
         "Yrjönkatu 8",
-        "Linnankatu 7"
+        "Linnankatu 7",
+        "Rälssintie 4",
+        "Rälssintie 6"
     ]
     for location in locations:
         if create_node(location) == 0 and settings.verbose:
             print("[✔] Success.")
 
+    for location in locations:
+        distances = []
+
+        print(location)
+        res = Database.get_distances(Database, location.replace(" ", "_"))
+        if res not in distances:
+            distances.append(res)
+            for node in res:
+                node = tuple(node)
+
+                dest = node[1].replace("_", " ")
+                dist = node[2]
+
+                if  dest == location:
+                    dest = node[0].replace("_", " ")
+
+                print("\t", dest[:6], dest[-2:], "\t", dist)   

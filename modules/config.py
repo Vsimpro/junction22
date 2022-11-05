@@ -1,2 +1,3 @@
 class settings:
-    verbose = False
+    verbose = True
+    treshold = 0.3
