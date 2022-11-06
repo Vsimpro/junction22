@@ -1,12 +1,14 @@
-# General notes:
+import flask, requests
 
-# merchant_id': '6364e0008018ce361efafc85'
-# api_token_key': 'l9B2nDnGgcc8eilUx-tlw0qG26kqPesiZFH-Qs8nFTw'
+from modules.sql import main
+from modules.sql import *
 
-#url = "https://restaurant-api.development.dev.woltapi.com/v1/daas-api/merchants/6364e0008018ce361efafc85/delivery-order"
-#url = "https://daas-public-api.development.dev.woltapi.com/merchants/6364e0008018ce361efafc85/delivery-fee"
+from flask_cors import CORS, cross_origin
+from flask import Flask, render_template, jsonify
 
-import requests
+app = Flask(__name__, static_folder="")
+cors = CORS(app)
+
 
 class Api:
     
@@ -20,31 +22,27 @@ class Api:
 
     api_gateway = "https://daas-public-api.development.dev.woltapi.com/"
 
-
-
     header = {
         "Authorization": "Bearer l9B2nDnGgcc8eilUx-tlw0qG26kqPesiZFH-Qs8nFTw"
     }
 
-    fee_example_json = {
-        "pickup": {
-            "location": {
-                "formatted_address": "Arkadiankatu 3-6"
-            }
-        },
-        "dropoff": {
-            "location": {
-                "formatted_address": "Otakaari 24, 02150 Espoo"
-            }
-        }
-    }
+@app.route("/",  methods=['GET'])
+def index(): 
+    Database()
+    main()
+    return "index.html :)"
 
-    
-def main():
-    url = f"{Api.api_gateway}{Api.fee_endpoint}"
-    print("[+] POST" + url)
-    #requests.post(url, headers=Api.header, json=Api.order_example_json).text DONE
-    print(requests.post(url, headers=Api.header, json=Api.fee_example_json).text)
+
+@app.route("/deliveries",  methods=['GET'])
+def a_file(): 
+    return Nodes.delivery_list
+
+@app.route("/deliveries/add",  methods=['GET'])
+def add_delivery(): 
+    create_node("Rälssitie 20")
+    find_pairs("Rälssitie 20")
+    return Nodes.delivery_list
+
 
 if __name__ == "__main__":
-    main()
+    app.run(host="0.0.0.0", port=8123)   

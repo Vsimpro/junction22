@@ -75,6 +75,20 @@ def Group(location_1, location_2, distance):
         print(distance, "km")
         Count.count += 1
 
+    def find_pairs(location):
+        distances = []
+        res = Database.get_distances(Database, location.replace(" ", "_"))
+        if res not in distances:
+            distances.append(res)
+            for node in res:
+                node = tuple(node)
+
+                dest = node[1].replace("_", " ")
+                dist = node[2]
+
+                if  dest == location:
+                    dest = node[0].replace("_", " ")
+                    Group(location, dest, float(dist))
 
 def create_node(this_node):
     if settings.verbose: print(f"[+] Creating node {this_node}")
@@ -106,7 +120,7 @@ def create_node(this_node):
 
     return 0
 
-if __name__ == "__main__":
+def main():
     Database()
     locations = [
         "Mannerheimintie 4",
